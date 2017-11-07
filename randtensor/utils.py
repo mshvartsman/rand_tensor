@@ -8,7 +8,7 @@ def kron_mvprod(As, b):
   for d in range(len(As)):
     A = As[d]
     Gd = A[:,0].size
-    X = np.reshape(x, tuple([Gd, CTN*numDraws/Gd]), order = 'F')
+    X = np.reshape(x, tuple([Gd, CTN*numDraws//Gd]), order = 'F')
     Z = np.dot(A, X).T
     x = np.reshape(Z, tuple([CTN,numDraws]), order = 'F')
   x = np.reshape(x, tuple([CTN*numDraws, 1]), order = 'F')
