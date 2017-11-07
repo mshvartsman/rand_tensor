@@ -2,7 +2,7 @@ import matplotlib
 import numpy as np
 from numpy import random as rng
 from scipy import linalg as sciLA
-from utils import *
+from .utils import *
 
 
 class randtensor(object):
@@ -53,7 +53,7 @@ class randtensor(object):
       figFlg = False;
       Lagrangians, f = self.optMaxEntropy(margEigValues, maxIter, figFlg);
       if f>1e-10:
-          print ("algorithm did not completely converged. error = %.10f \n results may be inaccurate" %f)
+          print(("algorithm did not completely converged. error = %.10f \n results may be inaccurate" %f))
       self.vecEigValues = 1/diagKronSum(Lagrangians);
       self.margCovs = margCovs;
       self.margEigValues = margEigValues;
@@ -85,8 +85,8 @@ class randtensor(object):
       error = [];
       for i in range(self.nmodes):
           error += [(sciLA.norm(estMargCov[i]-self.margCovs[i], 'fro')/sciLA.norm(self.margCovs[i], 'fro'))**2*100];
-          print "Error in estimated marginal covariance of mode %d, empirically estimated from samples, is %.2f %%" \
-          %(i, error[i])
+          print("Error in estimated marginal covariance of mode %d, empirically estimated from samples, is %.2f %%" \
+          %(i, error[i]))
       return error
 
 
@@ -94,7 +94,7 @@ class randtensor(object):
   def logObjectiveMaxEntropyTensor(self, logL, params):
       Lagrangians = []
       for x in params.tensorIxs:
-          Lagrangians.append(np.exp(logL[np.add(sum(params.sizes[0:x]),range(int(params.sizes[x])))]))
+          Lagrangians.append(np.exp(logL[np.add(sum(params.sizes[0:x]),list(range(int(params.sizes[x]))))]))
       ############ building blocks of the gradient ###########
       LsTensor = diagKronSum(Lagrangians)
       LsTensor = np.reshape(LsTensor, tuple(params.sizes), order='F')                                 # kronecker sum of the lagrangian matrices eigenvalues
@@ -127,7 +127,7 @@ class randtensor(object):
 
 
 
-          gradf_logL[np.add(sum(params.sizes[0:x]),range(int(params.sizes[x])))] = np.squeeze(gradf_logLx)
+          gradf_logL[np.add(sum(params.sizes[0:x]),list(range(int(params.sizes[x]))))] = np.squeeze(gradf_logLx)
 
       gradf_logL = gradf_logL/params.normalizeTerm
       ############ return ###########
@@ -153,7 +153,7 @@ class randtensor(object):
   #     figFlg = True          # display summary figure flag
       params.nmodes = len(eigValues);              # tensor size; i.e. the number of different dimensions of the tensor
       sizes = np.zeros(params.nmodes)              # tensor dimensions
-      params.tensorIxs = range(params.nmodes)
+      params.tensorIxs = list(range(params.nmodes))
       threshold = -10                                     # if an eigenvalue is below this threshold it is considered 0.
       for x in params.tensorIxs:
           sizes[x] = len(eigValues[x])
@@ -173,7 +173,7 @@ class randtensor(object):
   # initialization of the optimization variables
       logL0 = []
       for x in params.tensorIxs:
-          nxSet = map(int, set(params.tensorIxs).difference(set([x])))
+          nxSet = list(map(int, set(params.tensorIxs).difference(set([x]))))
           logL0.append(np.log(sum(params.sizes[nxSet]))-params.logEigValues[x])
 
   #     maxIter = 1000;        # maximum allowed iterations
@@ -185,7 +185,7 @@ class randtensor(object):
   ##################### convert solution from the lagrangian variables to the optimal eigenvalues of the big covariance matrix
       Lagrangians = []                                      # save the lagrangians to the output
       for x in params.tensorIxs:
-          Lagrangians.append(np.hstack([L[np.add(sum(params.sizes[0:x]),range(int(params.sizes[x]))).astype(int)]/preScale, float('inf')*np.ones(int(sizes[x]-params.sizes[x]))]))
+          Lagrangians.append(np.hstack([L[np.add(sum(params.sizes[0:x]),list(range(int(params.sizes[x])))).astype(int)]/preScale, float('inf')*np.ones(int(sizes[x]-params.sizes[x]))]))
 
       return Lagrangians, f[-1]
 

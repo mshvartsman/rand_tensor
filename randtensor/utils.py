@@ -32,7 +32,7 @@ def sumTensor(T, sumDim):
 def first_moment(tensor):
   sizes = np.array(tensor.shape)
   nmodes = len(sizes)
-  tensorIxs = range(nmodes)
+  tensorIxs = list(range(nmodes))
   tensor0 = tensor
   for x in tensorIxs:
     nxSet = list(set(tensorIxs).difference(set([x])))
@@ -43,7 +43,7 @@ def first_moment(tensor):
 def second_moments(tensor):
   sizes = np.array(tensor.shape)
   nmodes = len(sizes)
-  tensorIxs = range(nmodes)
+  tensorIxs = list(range(nmodes))
   sec_moments = []
   for x in tensorIxs:
     nxSet = list(set(tensorIxs) - set([x]))
@@ -70,7 +70,7 @@ def empiricalMargCovs(tensors):
   M =  empiricalMean(tensors)
   sizes = np.array(tensors[0].shape)
   nmodes = len(sizes)
-  allDim = range(nmodes)
+  allDim = list(range(nmodes))
   estMargCov = []
   for i in allDim:
     estMargCov.append(np.zeros([sizes[i], sizes[i]]))
@@ -123,7 +123,7 @@ def minimize(X, obj_Fn, length, params):
   f0, df0 = obj_Fn(X, params)    # get function value and gradient
   Z = X;X = unwrap(X); df0 = unwrap(df0);
   if not supressOutPut:
-      print "%s %6i;  Value %4.6e\r" %(S, i, f0)
+      print("%s %6i;  Value %4.6e\r" %(S, i, f0))
   fX = []
   fX.append(f0);
 
@@ -147,7 +147,7 @@ def minimize(X, obj_Fn, length, params):
             f3, df3 = obj_Fn(rewrap(Z, X+x3*s), params);
             df3 = unwrap(df3);
             if np.isnan(f3) or np.isinf(f3) or any(np.isnan(df3)+np.isinf(df3)):
-                print "error(' ')"
+                print("error(' ')")
             success = True;
         except:         # catch any error which occured in f
             x3 = (x2+x3)/2;  # bisect and try again
@@ -206,7 +206,7 @@ def minimize(X, obj_Fn, length, params):
     if (abs(d3) < (-SIG*d0)) and (f3 < (f0+x3*RHO*d0)): # if line search succeeded
       X = X+x3*s; f0 = f3; fX.append(f0);              # update variables
       if not supressOutPut:
-        print "%s %6i;  Value %4.6e\r" %(S, i, f0);
+        print("%s %6i;  Value %4.6e\r" %(S, i, f0));
       s = np.dot((np.dot(df3.T, df3)-np.dot(df0.T,df3))/(np.dot(df0.T,df0)), s) - df3;  # Polack-Ribiere CG direction
       df0 = df3;                        # swap derivatives
       d3 = d0; d0 = np.dot(df0.T,s);
