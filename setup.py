@@ -11,6 +11,5 @@ setup(name='randtensor',
       install_requires=[
                         'numpy',
                         'scipy',
-                        'itertools',
                         ],
       zip_safe=False)
